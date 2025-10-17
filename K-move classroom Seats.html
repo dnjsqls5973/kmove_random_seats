@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏫 교실 자리 배치</title>
+<style>
+    * {margin:0; padding:0; box-sizing:border-box;}
+
+    body {
+        min-height: 100vh;
+        background: #EDEDED; /* 실외 느낌의 부드러운 회색 */
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        padding:20px;
+    }
+
+    .container {
+        background: #F9F5F6; /* 실내 벽 느낌 */
+        border-radius: 25px;
+        padding: 35px;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+        max-width: 900px;
+        width: 100%;
+    }
+
+    h1 {
+        text-align:center;
+        font-size:2.3rem;
+        font-weight:800;
+        color:#4a4a4a;
+        margin-bottom:30px;
+    }
+
+    .classroom {
+        position: relative;
+        width: 100%;
+        max-width: 700px;
+        height: 600px;
+        margin: 0 auto;
+        border: 2px solid #f2d4dc;
+        border-radius: 20px;
+        background: #F8E8EE; /* 교실 내부 */
+        padding: 20px;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .center-area {
+        position: absolute;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 300px;
+        height: 380px;
+        background: #F9F5F6;
+        border: 2px solid #f2c9d8;
+        border-radius: 150px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #5a5557;
+        font-size: 1.3rem;
+        font-weight: 500;
+    }
+
+    .seat {
+        position: absolute;
+        background: #FDCEDF;
+        border: 2px solid rgba(255, 255, 255, 0.8);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: #4a4a4a;
+        font-weight: 600;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .seat:hover {
+        transform: translateY(-2px) scale(1.04);
+        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+    }
+
+    .seat.revealed {
+        background: #F2BED1;
+        color: #2e2e2e;
+        animation: flip 0.6s ease-in-out;
+    }
+
+    @keyframes flip {
+        0% { transform: rotateY(0deg); }
+        50% { transform: rotateY(90deg); }
+        100% { transform: rotateY(0deg); }
+    }
+
+    .seat-number {font-size:1.2rem; font-weight:700;}
+    .seat-name {font-size:0.95rem; font-weight:500; margin-top:2px;}
+
+    /* 좌석 위치 */
+    .seat-1 { right:110px; bottom:80px; width:100px; height:60px; }
+    .seat-2 { right:60px; bottom:150px; width:100px; height:60px; }
+    .seat-3 { right:60px; bottom:220px; width:100px; height:60px; }
+    .seat-4 { right:60px; bottom:290px; width:100px; height:60px; }
+    .seat-5 { right:60px; bottom:360px; width:100px; height:60px; }
+    .seat-6 { right:60px; bottom:430px; width:100px; height:60px; }
+    .seat-7 { right:150px; top:40px; width:100px; height:60px; }
+    .seat-8 { left:150px; top:40px; width:100px; height:60px; }
+    .seat-9 { left:60px; bottom:430px; width:100px; height:60px; }
+    .seat-10 { left:60px; bottom:360px; width:100px; height:60px; }
+    .seat-11 { left:60px; bottom:290px; width:100px; height:60px; }
+    .seat-12 { left:60px; bottom:220px; width:100px; height:60px; }
+    .seat-13 { left:60px; bottom:150px; width:100px; height:60px; }
+    .seat-14 { left:110px; bottom:80px; width:100px; height:60px; }
+
+    .seat-kay {
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 120px;
+        height: 60px;
+        background: #F2BED1;
+        color: #4a4a4a;
+        cursor: default;
+        pointer-events: none;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+
+    .controls {text-align:center; margin-top:30px;}
+    .btn {
+        background:#FDCEDF;
+        color:#4a4a4a;
+        border:none;
+        padding:14px 35px;
+        border-radius:35px;
+        font-size:1.05rem;
+        font-weight:600;
+        cursor:pointer;
+        margin:0 8px;
+        transition: all 0.3s ease;
+        box-shadow:0 4px 10px rgba(0,0,0,0.15);
+    }
+    .btn:hover {
+        background:#F2BED1;
+        transform: translateY(-2px);
+    }
+
+    .status {
+        text-align:center;
+        margin-top:25px;
+        color:#4a4a4a;
+        font-size:1.1rem;
+        font-weight:500;
+    }
+</style>
+</head>
+<body>
+<div class="container">
+    <h1>🎲 교실 자리 배치 🎲</h1>
+    <div class="classroom">
+        <div class="center-area">Table</div>
+
+        <!-- 좌석 -->
+        <div class="seat seat-1" data-seat="1"><span class="seat-number">1</span></div>
+        <div class="seat seat-2" data-seat="2"><span class="seat-number">2</span></div>
+        <div class="seat seat-3" data-seat="3"><span class="seat-number">3</span></div>
+        <div class="seat seat-4" data-seat="4"><span class="seat-number">4</span></div>
+        <div class="seat seat-5" data-seat="5"><span class="seat-number">5</span></div>
+        <div class="seat seat-6" data-seat="6"><span class="seat-number">6</span></div>
+        <div class="seat seat-7" data-seat="7"><span class="seat-number">7</span></div>
+        <div class="seat seat-8" data-seat="8"><span class="seat-number">8</span></div>
+        <div class="seat seat-9" data-seat="9"><span class="seat-number">9</span></div>
+        <div class="seat seat-10" data-seat="10"><span class="seat-number">10</span></div>
+        <div class="seat seat-11" data-seat="11"><span class="seat-number">11</span></div>
+        <div class="seat seat-12" data-seat="12"><span class="seat-number">12</span></div>
+        <div class="seat seat-13" data-seat="13"><span class="seat-number">13</span></div>
+        <div class="seat seat-14" data-seat="14"><span class="seat-number">14</span></div>
+
+        <!-- Kay: 클릭 불가 -->
+        <div class="seat seat-kay">
+            <div class="seat-name">Kay</div>
+        </div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="shuffleSeats()">🎰 자리 섞기</button>
+        <button class="btn" onclick="revealAll()">👀 모두 공개</button>
+        <button class="btn" onclick="resetSeats()">🔄 초기화</button>
+    </div>
+
+    <div class="status" id="status">
+        좌석을 클릭하여 이름을 확인하세요! (공개: <span id="revealedCount">0</span>/14)
+    </div>
+</div>
+
+<script>
+const students = [
+    'Kyutae', 'Quinn', 'Jua', 'April', 'Doyeon',
+    'Wonbin', 'Justin', 'Jerry', 'James', 'Moon',
+    'Daniel', 'Seoyeon', 'Joon', 'Chaerin'
+];
+
+let seatAssignments = new Map();
+let revealedSeats = new Set();
+
+function initializeSeats() {
+    const shuffledStudents = [...students].sort(() => Math.random() - 0.5);
+    seatAssignments.clear();
+    revealedSeats.clear();
+
+    for (let i = 1; i <= 14; i++) {
+        seatAssignments.set(i, shuffledStudents[i - 1]);
+    }
+
+    document.querySelectorAll('.seat:not(.seat-kay)').forEach(seat => {
+        seat.classList.remove('revealed');
+        const seatNumber = seat.dataset.seat;
+        seat.innerHTML = `<span class="seat-number">${seatNumber}</span>`;
+        seat.onclick = () => toggleSeat(seat);
+    });
+    updateStatus();
+}
+
+function toggleSeat(seatElement) {
+    const seatNumber = parseInt(seatElement.dataset.seat);
+    const studentName = seatAssignments.get(seatNumber);
+
+    if (seatElement.classList.contains('revealed')) {
+        seatElement.classList.remove('revealed');
+        seatElement.innerHTML = `<span class="seat-number">${seatNumber}</span>`;
+        revealedSeats.delete(seatNumber);
+    } else {
+        seatElement.classList.add('revealed');
+        seatElement.innerHTML = `
+            <div class="seat-number">${seatNumber}</div>
+            <div class="seat-name">${studentName}</div>
+        `;
+        revealedSeats.add(seatNumber);
+    }
+    updateStatus();
+}
+
+function shuffleSeats() {
+    if (confirm('자리를 다시 섞으시겠습니까?')) initializeSeats();
+}
+
+function revealAll() {
+    document.querySelectorAll('.seat:not(.seat-kay)').forEach(seat => {
+        const seatNumber = parseInt(seat.dataset.seat);
+        const studentName = seatAssignments.get(seatNumber);
+        seat.classList.add('revealed');
+        seat.innerHTML = `
+            <div class="seat-number">${seatNumber}</div>
+            <div class="seat-name">${studentName}</div>
+        `;
+        revealedSeats.add(seatNumber);
+    });
+    updateStatus();
+}
+
+function resetSeats() {
+    document.querySelectorAll('.seat:not(.seat-kay)').forEach(seat => {
+        seat.classList.remove('revealed');
+        const seatNumber = seat.dataset.seat;
+        seat.innerHTML = `<span class="seat-number">${seatNumber}</span>`;
+    });
+    revealedSeats.clear();
+    updateStatus();
+}
+
+function updateStatus() {
+    document.getElementById('revealedCount').textContent = revealedSeats.size;
+}
+
+initializeSeats();
+</script>
+</body>
+</html>
