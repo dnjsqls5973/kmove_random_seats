@@ -136,8 +136,8 @@
             background: #FDCEDF;
             border: 2px solid rgba(255, 255, 255, 0.8);
             border-radius: 12px;
-            color: #2e2e2e; /* 조금 더 진한 색상 */
-            font-weight: 900; /* 글자 두께를 더 진하게 */
+            color: #2e2e2e;
+            font-weight: 900;
             font-size: 1rem;
             display: flex;
             align-items: center;
@@ -171,6 +171,107 @@
             color:#4a4a4a;
             font-size:1.1rem;
             font-weight:500;
+        }
+
+        /* 태블릿 (768px 이하) */
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+                margin-bottom: 20px;
+            }
+            
+            .classroom {
+                height: 500px;
+            }
+            
+            .center-area {
+                width: 250px;
+                height: 320px;
+                font-size: 1.1rem;
+            }
+            
+            .seat {
+                width: 80px !important;
+                height: 50px !important;
+            }
+            
+            .seat-number { font-size: 1rem; }
+            .seat-name { font-size: 0.85rem; }
+        }
+
+        /* 모바일 (480px 이하) */
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+                border-radius: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+            
+            .classroom {
+                height: 400px;
+                padding: 15px;
+            }
+            
+            .center-area {
+                width: 180px;
+                height: 240px;
+                font-size: 0.9rem;
+                top: 60px;
+            }
+            
+            .seat {
+                width: 60px !important;
+                height: 40px !important;
+            }
+            
+            .seat-number { font-size: 0.85rem; }
+            .seat-name { font-size: 0.7rem; }
+            
+            /* 좌석 위치 재조정 */
+            .seat-1 { right: 80px; bottom: 60px; }
+            .seat-2 { right: 40px; bottom: 110px; }
+            .seat-3 { right: 40px; bottom: 160px; }
+            .seat-4 { right: 40px; bottom: 210px; }
+            .seat-5 { right: 40px; bottom: 260px; }
+            .seat-6 { right: 40px; bottom: 310px; }
+            .seat-7 { right: 110px; top: 30px; }
+            .seat-8 { left: 110px; top: 30px; }
+            .seat-9 { left: 40px; bottom: 310px; }
+            .seat-10 { left: 40px; bottom: 260px; }
+            .seat-11 { left: 40px; bottom: 210px; }
+            .seat-12 { left: 40px; bottom: 160px; }
+            .seat-13 { left: 40px; bottom: 110px; }
+            .seat-14 { left: 80px; bottom: 60px; }
+            
+            .seat-kay {
+                width: 60px !important;
+                height: 40px !important;
+                bottom: 15px;
+                font-size: 0.85rem;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+                margin: 5px;
+            }
+            
+            .status {
+                font-size: 0.95rem;
+                margin-top: 15px;
+            }
         }
     </style>
 </head>
