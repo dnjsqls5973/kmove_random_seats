@@ -173,6 +173,95 @@
             font-weight:500;
         }
 
+        /* 팝업 스타일 */
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-overlay.active {
+            display: flex;
+        }
+
+        .popup-content {
+            background: #F9F5F6;
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .popup-header {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #4a4a4a;
+            margin-bottom: 30px;
+        }
+
+        .partner-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .partner-item {
+            background: #FDCEDF;
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .partner {
+            flex: 1;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #4a4a4a;
+        }
+
+        .partner-divider {
+            font-size: 1.5rem;
+            color: #F2BED1;
+            font-weight: 800;
+        }
+
+        .close-btn {
+            margin-top: 30px;
+            width: 100%;
+            background: #F2BED1;
+            color: #4a4a4a;
+            border: none;
+            padding: 15px;
+            border-radius: 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .close-btn:hover {
+            background: #e6a9c1;
+            transform: translateY(-2px);
+        }
+
         /* 태블릿 (768px 이하) */
         @media (max-width: 768px) {
             .container {
@@ -201,6 +290,22 @@
             
             .seat-number { font-size: 1rem; }
             .seat-name { font-size: 0.85rem; }
+
+            .popup-content {
+                padding: 30px;
+            }
+
+            .popup-header {
+                font-size: 1.6rem;
+            }
+
+            .partner-item {
+                padding: 15px;
+            }
+
+            .partner {
+                font-size: 1rem;
+            }
         }
 
         /* 모바일 (480px 이하) */
@@ -272,6 +377,28 @@
                 font-size: 0.95rem;
                 margin-top: 15px;
             }
+
+            .popup-content {
+                padding: 20px;
+            }
+
+            .popup-header {
+                font-size: 1.4rem;
+                margin-bottom: 20px;
+            }
+
+            .partner-item {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .partner {
+                font-size: 0.9rem;
+            }
+
+            .partner-divider {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -306,11 +433,21 @@
     <div class="controls">
         <button class="btn" onclick="shuffleSeats()">🎰 자리 섞기</button>
         <button class="btn" onclick="revealAll()">👀 모두 공개</button>
+        <button class="btn" onclick="showPartners()">👥 짝 찾기</button>
         <button class="btn" onclick="resetSeats()">🔄 초기화</button>
     </div>
 
     <div class="status" id="status">
         좌석을 클릭하여 이름을 확인하세요! (공개: <span id="revealedCount">0</span>/14)
+    </div>
+</div>
+
+<!-- 짝꿍 팝업 -->
+<div class="popup-overlay" id="partnerPopup">
+    <div class="popup-content">
+        <div class="popup-header">👥 짝꿍 리스트 👥</div>
+        <div class="partner-list" id="partnerList"></div>
+        <button class="close-btn" onclick="closePartnerPopup()">닫기</button>
     </div>
 </div>
 
@@ -413,7 +550,49 @@
         document.getElementById('revealedCount').textContent = revealedSeats.size;
     }
 
+    // 짝꿍 찾기 기능
+    function showPartners() {
+        const partnerList = document.getElementById('partnerList');
+        partnerList.innerHTML = '';
+
+        // 좌석 위치 기준으로 짝꿍 만들기 (1-2, 3-4, 5-6, ...)
+        for (let i = 1; i <= 13; i += 2) {
+            const person1 = seatAssignments.get(i);
+            const person2 = seatAssignments.get(i + 1);
+
+            const partnerItem = document.createElement('div');
+            partnerItem.className = 'partner-item';
+            partnerItem.innerHTML = `
+                <div class="partner">
+                    <div style="font-size: 0.9rem; color: #888; margin-bottom: 5px;"></div>
+                    <div>${person1.name}</div>
+                </div>
+                <div class="partner-divider">🔗</div>
+                <div class="partner">
+                    <div style="font-size: 0.9rem; color: #888; margin-bottom: 5px;"></div>
+                    <div>${person2.name}</div>
+                </div>
+            `;
+            partnerList.appendChild(partnerItem);
+        }
+
+        document.getElementById('partnerPopup').classList.add('active');
+    }
+
+    function closePartnerPopup() {
+        document.getElementById('partnerPopup').classList.remove('active');
+    }
+
+    // 팝업 배경 클릭시 닫기
+    document.getElementById('partnerPopup').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closePartnerPopup();
+        }
+    });
+
     initializeSeats();
 </script>
 </body>
 </html>
+
+// 💕 
